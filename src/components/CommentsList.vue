@@ -27,9 +27,7 @@
             class="delete is-small"
             aria-label="delete"
             @click="handleDelete(comment.id)"
-          >
-            delete button
-          </button>
+          ></button>
         </div>
         <div class="message-body">
           {{ comment.body }}

@@ -126,6 +126,7 @@ const sidebarOpen = computed(() => mode.value !== null);
 const fetchPosts = async () => {
   isLoading.value = true;
   loadError.value = false;
+
   try {
     posts.value = await getPosts();
   } catch (e) {
@@ -153,26 +154,38 @@ const closeSidebar = () => {
 };
 
 const handleCreatePost = async (data) => {
+  const previousPosts = [...posts.value];
+
   try {
     const newPost = await createPost(data);
+
     posts.value.unshift(newPost);
     selectedPost.value = newPost;
     mode.value = "view";
   } catch (e) {
+    posts.value = previousPosts;
     alert("Could not create post");
   }
 };
 
 const handleUpdatePost = async (data) => {
+  const previousPosts = [...posts.value];
+  const previousSelected = { ...selectedPost.value };
+
   try {
     const updated = await updatePost(selectedPost.value.id, data);
+
     const index = posts.value.findIndex((p) => p.id === updated.id);
+
     if (index !== -1) {
       posts.value[index] = updated;
     }
+
     selectedPost.value = updated;
     mode.value = "view";
   } catch (e) {
+    posts.value = previousPosts;
+    selectedPost.value = previousSelected;
     alert("Could not update post");
   }
 };
@@ -180,11 +193,16 @@ const handleUpdatePost = async (data) => {
 const handleDeletePost = async () => {
   if (!confirm("Are you sure?")) return;
 
+  const previousPosts = [...posts.value];
+  const deletedId = selectedPost.value.id;
+
+  posts.value = posts.value.filter((p) => p.id !== deletedId);
+
   try {
-    await deletePost(selectedPost.value.id);
-    posts.value = posts.value.filter((p) => p.id !== selectedPost.value.id);
+    await deletePost(deletedId);
     closeSidebar();
   } catch (e) {
+    posts.value = previousPosts;
     alert("Could not delete post");
   }
 };

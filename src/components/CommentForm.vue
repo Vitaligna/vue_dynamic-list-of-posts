@@ -107,9 +107,8 @@ const errors = reactive({
 });
 
 const clearForm = () => {
-  form.name = "";
-  form.email = "";
   form.body = "";
+
   Object.keys(errors).forEach((key) => (errors[key] = false));
 };
 
